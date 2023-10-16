@@ -1,6 +1,7 @@
 import React from 'react';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-import { Input,Button,Descriptions, Icon,message   } from 'antd';
+import { Input,Button,Descriptions,message } from 'antd';
+import Icon from '@ant-design/icons';
 import {changeTestRegisterLink,updateCurrentTestBasicDetails,changeTestRegisterStatus,changeTestStatus,updateCandidatesTest} from '../../../actions/conductTest';
 import { connect } from 'react-redux';
 import { SecurePost } from '../../../services/axiosCall';

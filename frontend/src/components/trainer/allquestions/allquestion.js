@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Table, Input, Button, Icon, Typography,Popconfirm,Divider, Modal, Select, Row, Col  } from 'antd';
+import { Table, Input, Button, Typography,Popconfirm,Divider, Modal, Select, Row, Col  } from 'antd';
+import Icon from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import { connect } from 'react-redux';
 import { 

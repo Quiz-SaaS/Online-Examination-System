@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Input,Button, Typography,Tabs, Icon  } from 'antd';
+import { Input,Button, Typography,Tabs  } from 'antd';
+import Icon from '@ant-design/icons';
 import './conducttes.css';
 import { changeConducttestId, updateCandidatesTest,updateQuestiosnTest } from '../../../actions/conductTest';
 import TestDetails from './details';

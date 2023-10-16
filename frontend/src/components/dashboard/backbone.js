@@ -15,7 +15,8 @@ import { changeActiveRoute } from '../../actions/useraction';
 import Alert from '../common/alert';
 import { Link } from 'react-router-dom';
 import queryString from 'query-string';
-import { Layout, Menu,Button, Icon, Tooltip } from 'antd';
+import { Layout, Menu,Button, Tooltip } from 'antd';
+import Icon from '@ant-design/icons';
 import main from './main.jpg';
 const { Header, Sider, Content } = Layout;
 

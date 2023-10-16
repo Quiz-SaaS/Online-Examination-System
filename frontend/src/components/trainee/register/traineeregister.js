@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './trainerRegister.css';
-import {Row,Col,Form, Icon, Input, Button,Select,Typography  } from 'antd';
+import {Row,Col,Form, Input, Button,Select,Typography  } from 'antd';
+import Icon from '@ant-design/icons';
 import queryString from 'query-string';
 import apis from '../../../services/Apis';
 import { Post } from '../../../services/axiosCall';

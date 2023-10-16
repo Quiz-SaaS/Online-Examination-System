@@ -1,12 +1,12 @@
 {
     "mongodb": {
-        "connectionString": "mongodb://admin:admin123@ds131296.mlab.com:31296/ecell"
+        "connectionString": "mongodb://localhost:27017/NAB"
     },
     "jwt": {
         "secret" : "Examination Portal Application"
     },
     "mail-credentials" : {
-        "userid" :"<smtp server userId>",
-        "password" : "<smtp server password>"
+        "userid" :"walter.zhangfang@gmail.com",
+        "password" : "12345678"
     }
 }

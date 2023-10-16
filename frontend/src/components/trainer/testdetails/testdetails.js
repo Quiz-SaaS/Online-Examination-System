@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Tabs, Icon, Descriptions,Skeleton, Tag, Input ,message} from 'antd';
+import { Tabs, Descriptions,Skeleton, Tag, Input ,message} from 'antd';
+import Icon from '@ant-design/icons';
 import { connect } from 'react-redux';
 import './testdetails.css';
 import Questions from '../conducttest/questions'

@@ -18,7 +18,7 @@ const options = {
 
 mongoose.connect(config.get('mongodb.connectionString'),options).then(()=>{
     console.log("connected to mongoDB");
-    //tool.createadmin();
+    // tool.createadmin();
 }).catch((err)=>{
     console.log("Error connecting to database",err);
 })

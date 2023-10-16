@@ -1,5 +1,6 @@
 import React from 'react';
-import { Table, Icon , Tag,Skeleton, Descriptions,Modal, Button,Row,Col } from 'antd';
+import { Table, Tag,Skeleton, Descriptions,Modal, Button,Row,Col } from 'antd';
+import Icon from '@ant-design/icons';
 import './answer.css';
 import './answermobileview.css';
 import './individualquestion_mobileview.css';

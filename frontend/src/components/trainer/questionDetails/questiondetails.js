@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Skeleton,Row, Col, Icon, Tabs,Descriptions,Button    } from 'antd';
+import { Skeleton,Row, Col, Tabs,Descriptions,Button } from 'antd';
+import Icon from '@ant-design/icons';
 import './questiondetails.css';
 import apis from '../../../services/Apis';
 import { SecureGet } from '../../../services/axiosCall';

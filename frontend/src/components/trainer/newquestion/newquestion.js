@@ -10,9 +10,9 @@ import {
     Checkbox,
     Modal,
     Upload,
-    Icon,
     InputNumber 
 } from 'antd';
+import Icon from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { 
     ChangeQuestionConfirmDirty,

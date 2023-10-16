@@ -1,5 +1,6 @@
 import React from "react";
-import { Form, Input, Icon, Button } from 'antd';
+import { Form, Input, Button } from 'antd';
+import Icon from '@ant-design/icons';
 import './login.css';
 import { connect } from 'react-redux';
 import { login, logout } from '../../../actions/loginAction';

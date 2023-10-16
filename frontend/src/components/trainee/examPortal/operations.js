@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import { Badge, Icon,Button,Row,Col  } from 'antd';
+import { Badge,Button,Row,Col  } from 'antd';
+import Icon from '@ant-design/icons';
 import './portal.css';
 import {switchQuestion} from '../../../actions/traineeAction';
 
