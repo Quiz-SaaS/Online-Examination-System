@@ -1,75 +1,75 @@
 const initialState = {
-    TrainermodalOpened : false,
+    TrainermodalOpened: false,
     TrainerconfirmDirty: false,
-    Trainermode : 'Register',
-    trainerId : null,
-    TrainersearchText : '',
-    trainerTableLoadingStatus:false,
-    trainerEditFormLoadingStatus:false,
-    trainerTableData:[],
-    trainerdetails:{},
-    subjectTableData : [] ,
-    SubjectmodalOpened : false,
+    Trainermode: 'Register',
+    trainerId: null,
+    TrainersearchText: '',
+    trainerTableLoadingStatus: false,
+    trainerEditFormLoadingStatus: false,
+    trainerTableData: [],
+    trainerdetails: {},
+    subjectTableData: [],
+    SubjectmodalOpened: false,
     SubjectconfirmDirty: false,
-    Subjectmode : 'New Topic',
-    SubjectId : null,
-    SubjectsearchText : '',
-    SubjectTableLoading : false, 
-    subjectDetails :{}    
-}
+    Subjectmode: 'New Topic',
+    SubjectId: null,
+    SubjectsearchText: '',
+    SubjectTableLoading: false,
+    subjectDetails: {},
+};
 
-export default (state = initialState, action )=>{
-    switch(action.type){
+export default function adminReducer(state = initialState, action) {
+    const { type, payload } = action;
+
+    switch (type) {
         case 'CHANGE_TRAINER_MODAL_STATE':
             return {
                 ...state,
-                TrainermodalOpened : action.payload1,
-                trainerId : action.payload2,
-                Trainermode : action.payload3,
-                trainerdetails : action.payload4
-
-            }
+                TrainermodalOpened: payload[0],
+                trainerId: payload[1],
+                Trainermode: payload[2],
+                trainerdetails: payload[3],
+            };
         case 'CHANGE_TRAINER_FORM_CONFIRMDIRTY':
             return {
                 ...state,
-                TrainerconfirmDirty : action.payload
-            }
+                TrainerconfirmDirty: payload,
+            };
         case 'CHANGE_TRAINER_SEARCH_TEXT':
-                return {
-                    ...state,
-                    TrainersearchText : action.payload
-                }
+            return {
+                ...state,
+                TrainersearchText: payload,
+            };
         case 'CHANGE_TRAINER_TABLE_LOADING_STATUS':
-                return {
-                    ...state,
-                    trainerTableLoadingStatus : action.payload1,
-                    trainerTableData : action.payload2,
-
-                }
+            return {
+                ...state,
+                trainerTableLoadingStatus: payload[0],
+                trainerTableData: payload[1],
+            };
         case 'CHANGE_SUBJECT_MODAL_STATE':
             return {
                 ...state,
-                SubjectmodalOpened : action.payload1,
-                SubjectId : action.payload2,
-                Subjectmode : action.payload3,
-                subjectDetails : action.payload4
-            }
+                SubjectmodalOpened: payload[0],
+                SubjectId: payload[1],
+                Subjectmode: payload[2],
+                subjectDetails: payload[3],
+            };
         case 'CHANGE_SUBJECT_FORM_CONFIRMDIRTY':
             return {
                 ...state,
-                SubjectconfirmDirty : action.payload
-            }
+                SubjectconfirmDirty: payload,
+            };
         case 'CHANGE_SUBJECT_SEARCH_TEXT':
-                return {
-                    ...state,
-                    SubjectsearchText : action.payload
-                }
+            return {
+                ...state,
+                SubjectsearchText: payload,
+            };
         case 'CHANGE_SUBJECT_TABLE_LOADING_STATUS':
-                return {
-                    ...state,
-                    SubjectTableLoading : action.payload1,
-                    subjectTableData :action.payload2
-                }
+            return {
+                ...state,
+                SubjectTableLoading: payload[0],
+                subjectTableData: payload[1],
+            };
         default:
             return state;
     }

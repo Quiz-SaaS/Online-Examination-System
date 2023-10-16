@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
-    "antd": "5.10.1",
+    "antd": "4.24.14",
     "axios": "1.5.1",
     "chart.js": "4.4.0",
     "lodash": "4.17.21",
