@@ -1,170 +1,125 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Form, InputNumber , Input, Button,Select  } from 'antd';
-import { changeStep,changeBasicNewTestDetails } from '../../../actions/testAction';
+import { InputNumber, Input, Button, Select } from 'antd';
+import { changeStep, changeBasicNewTestDetails } from '../../../actions/testAction';
 import { SecurePost } from '../../../services/axiosCall';
 import './newtest.css';
-import apis from '../../../services/Apis'
+import apis from '../../../services/Apis';
 const { Option } = Select;
 
+const BasicTestForm = ({ test, admin, changeStep, changeBasicNewTestDetails }) => {
+    const [checkingName, setCheckingName] = useState('');
 
-class BasicTestFormO extends Component {
-    constructor(props){
-        super(props);
-        this.state={
-            checkingName:""
-        }
-    }
-
-    handleSubmit = e => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                console.log(values)
-                this.props.changeBasicNewTestDetails({
-                    testType:values.type,
-                    testTitle: values.title,
-                    testDuration : values.duration,
-                    OrganisationName:values.organisation,
-                    testSubject:values.subjects
-                })
-                this.props.changeStep(1);
-            }
+        const { type, title, duration, organisation, subjects } = e.target.elements;
+        changeBasicNewTestDetails({
+            testType: type.value,
+            testTitle: title.value,
+            testDuration: duration.value,
+            OrganisationName: organisation.value,
+            testSubject: subjects.value,
         });
+        changeStep(1);
     };
 
-    validateTestName = (rule, value, callback) => {
-        if(value.length>=5){
-            this.setState({
-                checkingName:"validating"
-            })
+    const validateTestName = (rule, value, callback) => {
+        if (value.length >= 5) {
+            setCheckingName('validating');
             SecurePost({
-                url:apis.CHECK_TEST_NAME,
-                data:{
-                    testname:value
-                }
-            }).then((data)=>{
-                console.log(data);
-                if(data.data.success){
-                    if(data.data.can_use){
-                        this.setState({
-                            checkingName:"success"
-                        })
+                url: apis.CHECK_TEST_NAME,
+                data: {
+                    testname: value,
+                },
+            })
+                .then((data) => {
+                    console.log(data);
+                    if (data.data.success) {
+                        if (data.data.can_use) {
+                            setCheckingName('success');
+                            callback();
+                        } else {
+                            setCheckingName('error');
+                            callback('Another test exist with same name.');
+                        }
+                    } else {
+                        setCheckingName('success');
                         callback();
                     }
-                    else{
-                        this.setState({
-                            checkingName:"error"
-                        })
-                        callback('Another test exist with same name.');
-                    }
-                }
-                else{
-                    this.setState({
-                        checkingName:"success"
-                    })
-                    callback()
-                }
-            }).catch((ee)=>{
-                console.log(ee);
-                this.setState({
-                    checkingName:"success"
                 })
-                callback()
-            })
-        }
-        else{
+                .catch((ee) => {
+                    console.log(ee);
+                    setCheckingName('success');
+                    callback();
+                });
+        } else {
             callback();
-        }        
+        }
     };
 
-
-    render() {
-        const { getFieldDecorator } = this.props.form;
-        return (
-            <div className="basic-test-form-outer">
-                <div className="basic-test-form-inner">
-                    <Form onSubmit={this.handleSubmit}>
-                        <Form.Item label="Test Type"  hasFeedback>
-                            {getFieldDecorator('type', {
-                                initialValue : this.props.test.newtestFormData.testType,
-                                rules: [{ required: true, message: 'Please select a test type' }],
-                            })(
-                                <Select 
-                                placeholder="Test Type"
-                                >
-                                    <Option value="pre-test">Pre Test</Option>
-                                    <Option value="post-test">Post Test</Option>   
-                                </Select>
-                            )}
-                        </Form.Item>
-                        <Form.Item label="Test Title"  hasFeedback validateStatus={this.state.checkingName}>
-                            {getFieldDecorator('title', {
-                                initialValue : this.props.test.newtestFormData.testTitle,
-                                rules: [
-                                    { required: true, message: 'Please give the test title' },
-                                    { min:5, message: 'Title should be atleast 5 character long' },
-                                    { validator: this.validateTestName }
-                                ],
-                                
-                            })(
-                                <Input placeholder="Test Title" />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="Subjects"  hasFeedback>
-                            {getFieldDecorator('subjects', {
-                                initialValue : this.props.test.newtestFormData.testSubject,
-                                rules: [{ required: true, message: 'Please select a test type' }],
-                            })(
-                                <Select
-                                mode="multiple"
-                                placeholder="Select one or more subjects"
-                                style={{ width: '100%' }}
-                                allowClear={true}
-                                optionFilterProp="s"
-                                >
-                                    {this.props.admin.subjectTableData.map(item => (
-                                        <Select.Option key={item._id} value={item._id} s={item.topic}>
-                                        {item.topic}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            )}
-                        </Form.Item>
-                        <Form.Item label="Test Duration ( Min. test duration-60m )" hasFeedback>
-                            {getFieldDecorator('duration', {
-                                initialValue : this.props.test.newtestFormData.testDuration,
-                                rules: [{ required: true, message: 'Please give test duration' }],
-                            })(
-                                <InputNumber style={{width:'100%'}}  placeholder="Test Duration" min={60} max={180}/>
-                            )}
-                        </Form.Item> 
-                        <Form.Item label="Organisation Name"  hasFeedback>
-                            {getFieldDecorator('organisation', {
-                                initialValue : this.props.test.newtestFormData.OrganisationName
-                            })(
-                                <Input placeholder="Organisation Name" />
-                            )}
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" block>
-                                Next
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </div>
+    return (
+        <div className="basic-test-form-outer">
+            <div className="basic-test-form-inner">
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="type">Test Type</label>
+                    <Select id="type" defaultValue={test.newtestFormData.testType} required>
+                        <Option value="pre-test">Pre Test</Option>
+                        <Option value="post-test">Post Test</Option>
+                    </Select>
+                    <label htmlFor="title">Test Title</label>
+                    <Input
+                        id="title"
+                        defaultValue={test.newtestFormData.testTitle}
+                        required
+                        minLength={5}
+                        addonAfter={checkingName}
+                        onChange={(e) => validateTestName(null, e.target.value, () => {})}
+                        placeholder="Test Title"
+                    />
+                    <label htmlFor="subjects">Subjects</label>
+                    <Select
+                        id="subjects"
+                        defaultValue={test.newtestFormData.testSubject}
+                        required
+                        mode="multiple"
+                        placeholder="Select one or more subjects"
+                        style={{ width: '100%' }}
+                        allowClear={true}
+                        optionFilterProp="s"
+                    >
+                        {admin.subjectTableData.map((item) => (
+                            <Option key={item._id} value={item._id} s={item.topic}>
+                                {item.topic}
+                            </Option>
+                        ))}
+                    </Select>
+                    <label htmlFor="duration">Test Duration ( Min. test duration-60m )</label>
+                    <InputNumber
+                        id="duration"
+                        defaultValue={test.newtestFormData.testDuration}
+                        required
+                        min={60}
+                        max={180}
+                        placeholder="Test Duration"
+                        style={{ width: '100%' }}
+                    />
+                    <label htmlFor="organisation">Organisation Name</label>
+                    <Input id="organisation" defaultValue={test.newtestFormData.OrganisationName} placeholder="Organisation Name" />
+                    <Button type="primary" htmlType="submit" block>
+                        Next
+                    </Button>
+                </form>
             </div>
-        )
-    }
-}
-const BasicTestForm = Form.create({ name: 'Basic Form' })(BasicTestFormO);
+        </div>
+    );
+};
 
-const mapStateToProps = state => ({
-    test : state.test,
-    admin:state.admin
+const mapStateToProps = (state) => ({
+    test: state.test,
+    admin: state.admin,
 });
 
-export default connect(mapStateToProps,{
+export default connect(mapStateToProps, {
     changeStep,
-    changeBasicNewTestDetails
+    changeBasicNewTestDetails,
 })(BasicTestForm);

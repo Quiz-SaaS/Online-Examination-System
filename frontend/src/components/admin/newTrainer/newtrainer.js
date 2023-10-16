@@ -1,181 +1,165 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react';
 import './newtrainer.css';
-import {
-    Form,
-    Input,
-    Button,
-    Select
-} from 'antd';
-import {SecurePost} from '../../../services/axiosCall';
+import { Input, Button, Select } from 'antd';
+import { SecurePost } from '../../../services/axiosCall';
 import apis from '../../../services/Apis';
 import { connect } from 'react-redux';
-import { 
+import {
     ChangeTrainerConfirmDirty,
     ChangeTrainerModalState,
-    ChangeTrainerTableData
+    ChangeTrainerTableData,
 } from '../../../actions/adminAction';
 import Alert from '../../../components/common/alert';
 const { Option } = Select;
-class NewTrainer extends Component {
 
-    compareToFirstPassword = (rule, value, callback) => {
-        const form = this.props.form;
-        if (value && value !== form.getFieldValue('password')) {
+const NewTrainer = ({
+    admin,
+    ChangeTrainerConfirmDirty,
+    ChangeTrainerModalState,
+    ChangeTrainerTableData,
+}) => {
+    const [name, setName] = useState(admin.trainerdetails.name);
+    const [emailid, setEmailid] = useState(admin.trainerdetails.emailid);
+    const [contact, setContact] = useState(admin.trainerdetails.contact);
+    const [password, setPassword] = useState(admin.trainerdetails.password);
+    const [confirmpassword, setConfirmpassword] = useState(admin.trainerdetails.confirmpassword);
+    const [prefix, setPrefix] = useState(admin.trainerdetails.prefix || '+91');
+
+    const compareToFirstPassword = (rule, value, callback) => {
+        if (value && value !== password) {
             callback('passwords are not same !');
         } else {
             callback();
         }
     };
 
-    validateToNextPassword = (rule, value, callback) => {
-        const form = this.props.form;
-        if (value && this.props.admin.TrainerconfirmDirty) {
-            form.validateFields(['confirm'], { force: true });
+    const validateToNextPassword = (rule, value, callback) => {
+        if (value && admin.TrainerconfirmDirty) {
+            callback('Please confirm your password!');
+        } else {
+            callback();
         }
-        callback();
     };
-    
 
-
-    handleSubmit = e => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        this.props.form.validateFieldsAndScroll((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', values);
-                
-                    SecurePost({
-                        url : `${apis.CREATE_TRAINER}`,
-                        data : {
-                            _id : this.props.admin.trainerId,
-                            name :values.name,
-                            password : values.password,
-                            emailid : values.emailid,
-                            contact : values.prefix+values.contact
-                        }
-                    }).then((response)=>{
-                        if(response.data.success){
-                            this.props.ChangeTrainerModalState(false,null,'Register');
-                            Alert('success','Success',response.data.message);
-                            this.props.ChangeTrainerTableData();
-                        }
-                        else{
-                            console.log(response.data);
-                            this.props.ChangeTrainerModalState(false,null,'Register');
-                            return Alert('warning','Warning!',response.data.message);
-                        }
-                    }).catch((error)=>{
-                        this.props.ChangeTrainerModalState(false,null,'Register');
-                        return Alert('error','Error!','Server Error');
-                    })
-                
-            }
-        });
+        const values = {
+            name,
+            emailid,
+            contact: prefix + contact,
+            password,
+            confirmpassword,
+        };
+        console.log('Received values of form: ', values);
+        SecurePost({
+            url: `${apis.CREATE_TRAINER}`,
+            data: {
+                _id: admin.trainerId,
+                name,
+                password,
+                emailid,
+                contact: prefix + contact,
+            },
+        })
+            .then((response) => {
+                if (response.data.success) {
+                    ChangeTrainerModalState(false, null, 'Register');
+                    Alert('success', 'Success', response.data.message);
+                    ChangeTrainerTableData();
+                } else {
+                    console.log(response.data);
+                    ChangeTrainerModalState(false, null, 'Register');
+                    return Alert('warning', 'Warning!', response.data.message);
+                }
+            })
+            .catch((error) => {
+                ChangeTrainerModalState(false, null, 'Register');
+                return Alert('error', 'Error!', 'Server Error');
+            });
     };
 
-    render() {
-        const { getFieldDecorator } = this.props.form;
-        const prefixSelector = getFieldDecorator('prefix', {
-            initialValue: this.props.admin.trainerdetails.prefix || '+91',
-            rules: [{ required: true, message: 'Please enter contact no prefix' }],
-          })(
-            <Select style={{ width: 70 }}>
-              <Option value="+91">+91</Option>
-            </Select>,
-          );
-        return (
-            <div className="register-trainer-form">
-                <div className="register-trainer-form-body">
-                    <Form  onSubmit={this.handleSubmit}>
-                        <Form.Item label="Name" hasFeedback className="input-admin-trainer">
-                            {getFieldDecorator('name', {
-                                initialValue : this.props.admin.trainerdetails.name,
-                                rules: [{ required: true, message: 'Please input your name!', whitespace: true }],
-                            })(<Input />)}
-                        </Form.Item>
-                    
-                        { !this.props.admin.trainerId ? <Form.Item label="E-mail" hasFeedback className="input-admin-trainer">
-                            {getFieldDecorator('emailid', {
-                                initialValue : this.props.admin.trainerdetails.emailid,
-                                rules: [
-                                    {
-                                        type: 'email',
-                                        message: 'The input is not valid E-mail!',
-                                    },
-                                    {
-                                        required: true,
-                                        message: 'Please input your E-mail!',
-                                    },
-                                ],
-                            })(<Input />)}
-                        </Form.Item> : null }
+    return (
+        <div className="register-trainer-form">
+            <div className="register-trainer-form-body">
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="name">Name</label>
+                    <Input
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Name"
+                        required
+                    />
 
-                        <Form.Item label="Phone Number" className="input-admin-trainer">
-                            {getFieldDecorator('contact', {
-                                initialValue : this.props.admin.trainerdetails.contact,
-                                rules: [
-                                    { 
-                                        required: true, 
-                                        message: 'Please input your phone number!' 
-                                    },
-                                    {
-                                        len:10,
-                                        message:'Contact number must be 10 digit long'
-                                    }],
-                            })(<Input addonBefore={prefixSelector} min={10} max={10} />)}
-                        </Form.Item>
+                    {!admin.trainerId ? (
+                        <>
+                            <label htmlFor="emailid">E-mail</label>
+                            <Input
+                                id="emailid"
+                                value={emailid}
+                                onChange={(e) => setEmailid(e.target.value)}
+                                placeholder="E-mail"
+                                type="email"
+                                required
+                            />
+                        </>
+                    ) : null}
 
-                        { !this.props.admin.trainerId ? <div><Form.Item label="Password" hasFeedback className="input-admin-trainer">
-                                {getFieldDecorator('password', {
-                                    initialValue : this.props.admin.trainerdetails.password,
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: 'Please input your password!',
-                                        },
-                                        {
-                                            validator: this.validateToNextPassword,
-                                        },
-                                    ],
-                                })(<Input.Password />)}
-                            </Form.Item>
-                        
-                            <Form.Item label="Confirm Password" hasFeedback className="input-admin-trainer">
-                                {getFieldDecorator('confirm', {
-                                    initialValue : this.props.admin.trainerdetails.confirmpassword,
-                                    rules: [
-                                    {
-                                        required: true,
-                                        message: 'Please confirm your password!',
-                                    },
-                                    {
-                                        validator: this.compareToFirstPassword,
-                                    },
-                                    ],
-                                })(<Input.Password onBlur={this.handleConfirmBlur} />)}
-                            </Form.Item></div> : null}
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" block>
-                                {this.props.admin.Trainermode}
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </div>
+                    <label htmlFor="contact">Phone Number</label>
+                    <Input
+                        id="contact"
+                        value={contact}
+                        onChange={(e) => setContact(e.target.value)}
+                        placeholder="Phone Number"
+                        addonBefore={
+                            <Select style={{ width: 70 }} value={prefix} onChange={(value) => setPrefix(value)}>
+                                <Option value="+91">+91</Option>
+                            </Select>
+                        }
+                        required
+                        minLength={10}
+                        maxLength={10}
+                    />
+
+                    {!admin.trainerId ? (
+                        <>
+                            <label htmlFor="password">Password</label>
+                            <Input.Password
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password"
+                                required
+                                onBlur={validateToNextPassword}
+                            />
+
+                            <label htmlFor="confirmpassword">Confirm Password</label>
+                            <Input.Password
+                                id="confirmpassword"
+                                value={confirmpassword}
+                                onChange={(e) => setConfirmpassword(e.target.value)}
+                                placeholder="Confirm Password"
+                                required
+                                onBlur={compareToFirstPassword}
+                            />
+                        </>
+                    ) : null}
+
+                    <Button type="primary" htmlType="submit" block>
+                        {admin.Trainermode}
+                    </Button>
+                </form>
             </div>
-        )
-    }
-}
+        </div>
+    );
+};
 
-const mapStateToProps = state => ({
-    admin : state.admin
+const mapStateToProps = (state) => ({
+    admin: state.admin,
 });
 
-
-
-const NewTrainerForm = Form.create({ name: 'register' })(NewTrainer);
-
-export default connect(mapStateToProps,{
+export default connect(mapStateToProps, {
     ChangeTrainerConfirmDirty,
     ChangeTrainerModalState,
-    ChangeTrainerTableData
-})(NewTrainerForm);
-
+    ChangeTrainerTableData,
+})(NewTrainer);
