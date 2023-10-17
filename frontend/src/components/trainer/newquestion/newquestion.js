@@ -293,7 +293,12 @@ function NewQuestion(props) {
     setSubmitDisabled(true);
   };
 
-  const ExplanationChange = (e) => {};
+  const ExplanationChange = (value) => {
+    setQuestionDetails((prevState) => ({
+        ...prevState,
+        explanation: value,
+    }));
+};
 
   const { getFieldDecorator } = props.form;
   const { Option } = Select;
