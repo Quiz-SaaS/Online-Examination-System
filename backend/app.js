@@ -1,100 +1,62 @@
-const PORT = process.env.PORT || 5000
-var createError = require('http-errors');
-var express = require('express');
-const helmet = require('helmet')
-var path = require('path');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
+const PORT = process.env.PORT || 5000;
+const createError = require('http-errors');
+const express = require('express');
+const helmet = require('helmet');
+const path = require('path');
+const logger = require('morgan');
 const expressValidator = require('express-validator');
-var passport = require("./services/passportconf");
-var tool = require("./services/tool");
-var app = express();
+const passport = require('./services/passportconf');
+const app = express();
 
-
+// middlewares
 app.use(helmet());
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, access-control-allow-origin");
-    next();
-});
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(expressValidator());
-//import other files
-var mongoose = require("./services/connection");
-var admin = require("./routes/admin");
-var login = require("./routes/login");
-var user = require("./routes/user");
-var universal = require("./routes/universal");
-var question = require("./routes/questions");
-var testpaper = require("./routes/testpaper");
-var up = require("./routes/fileUpload");
-var trainee = require("./routes/trainee");
-var stopRegistration = require("./routes/stopRegistration");
-var results = require("./routes/results");
-var dummy = require("./routes/dummy");
-
-
-
-
-
-
-
-//configs
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
+// routes
+const adminRouter = require('./routes/admin');
+const loginRouter = require('./routes/login');
+const userRouter = require('./routes/user');
+const universalRouter = require('./routes/universal');
+const questionRouter = require('./routes/questions');
+const testpaperRouter = require('./routes/testpaper');
+const upRouter = require('./routes/fileUpload');
+const traineeRouter = require('./routes/trainee');
+const stopRegistrationRouter = require('./routes/stopRegistration');
+const resultsRouter = require('./routes/results');
+const dummyRouter = require('./routes/dummy');
 
+app.use('/api/v1/admin', passport.authenticate('user-token', { session: false }), adminRouter);
+app.use('/api/v1/user', passport.authenticate('user-token', { session: false }), userRouter);
+app.use('/api/v1/subject', passport.authenticate('user-token', { session: false }), universalRouter);
+app.use('/api/v1/questions', passport.authenticate('user-token', { session: false }), questionRouter);
+app.use('/api/v1/test', passport.authenticate('user-token', { session: false }), testpaperRouter);
+app.use('/api/v1/upload', passport.authenticate('user-token', { session: false }), upRouter);
+app.use('/api/v1/trainer', passport.authenticate('user-token', { session: false }), stopRegistrationRouter);
+app.use('/api/v1/trainee', traineeRouter);
+app.use('/api/v1/final', resultsRouter);
+app.use('/api/v1/lala', dummyRouter);
+app.use('/api/v1/login', loginRouter);
 
-//passport
-app.use(passport.initialize());
-app.use(passport.session());
+// catch-all route
+app.use('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-
-//bind routes
-app.use("/api/v1/admin",passport.authenticate('user-token', { session : false }),admin);
-app.use("/api/v1/user",passport.authenticate('user-token', { session : false }),user);
-app.use('/api/v1/subject',passport.authenticate('user-token', { session : false }),universal);
-app.use('/api/v1/questions',passport.authenticate('user-token', { session : false }),question);
-app.use('/api/v1/test',passport.authenticate('user-token', { session : false }),testpaper);
-app.use('/api/v1/upload',passport.authenticate('user-token', { session : false }),up);
-app.use('/api/v1/trainer',passport.authenticate('user-token', { session : false }),stopRegistration);
-app.use('/api/v1/trainee',trainee);
-app.use('/api/v1/final',results);
-app.use('/api/v1/lala',dummy);
-
-
-
-
-
-
-
-app.use('/api/v1/login',login);
-
-app.get('*', (req,res) =>{
-    res.sendFile(path.join(__dirname+'/public/index.html'));
-});
-
-
-
-
-//error handlings
-app.use(function(req, res, next) {
-    next(createError(404,"Invalid API. Use the official documentation to get the list of valid APIS."));
-});
-
-app.use((err, req, res, next)=>{
+// error handling
+app.use((req, res, next) => next(createError(404, 'Invalid API. Use the official documentation to get the list of valid APIs.')));
+app.use((err, req, res, next) => {
     console.log(err);
-    res.status(err.status).json({
-        success : false,
-        message : err.message
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message,
     });
 });
 
-app.listen(PORT,(err)=>{
-    if(err){
-      console.log(err);
+app.listen(PORT, (err) => {
+    if (err) {
+        console.log(err);
     }
     console.log(`Server Started. Server listening to port ${PORT}`);
 });
